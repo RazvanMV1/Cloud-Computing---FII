@@ -1,0 +1,831 @@
+{
+  "info": {
+    "name": "University API",
+    "description": "Colectie completa de cereri pentru University RESTful API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Students",
+      "description": "Operatii CRUD pentru studenti",
+      "item": [
+        {
+          "name": "GET All Students",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/students",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students"]
+            }
+          }
+        },
+        {
+          "name": "GET All Students - Filter by Name",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/students?name=Ion",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students"],
+              "query": [{"key": "name", "value": "Ion"}]
+            }
+          }
+        },
+        {
+          "name": "GET All Students - Filter by Age",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/students?age=20",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students"],
+              "query": [{"key": "age", "value": "20"}]
+            }
+          }
+        },
+        {
+          "name": "GET All Students - Pagination",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/students?page=1&limit=2",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "2"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Student by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/students/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students", "1"]
+            }
+          }
+        },
+        {
+          "name": "GET Student by ID - Not Found",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/students/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students", "999"]
+            }
+          }
+        },
+        {
+          "name": "GET Student Courses",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/students/1/courses",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students", "1", "courses"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Student",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/students",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Ion Popescu\",\n    \"email\": \"ion.popescu@university.com\",\n    \"age\": 20\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "POST Create Student - Duplicate Email (409)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/students",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Alt Ion\",\n    \"email\": \"ion.popescu@university.com\",\n    \"age\": 25\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "POST Create Student - Invalid Age (400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/students",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"test@test.com\",\n    \"age\": 5\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "POST Create Student - Missing Fields (400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/students",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Test User\"\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "PUT Update Student",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/students/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Ion Popescu Updated\",\n    \"email\": \"ion.updated@university.com\",\n    \"age\": 21\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "PUT Update Student - Not Found (404)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/students/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students", "999"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Ghost Student\",\n    \"email\": \"ghost@university.com\",\n    \"age\": 20\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "PATCH Partial Update Student",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/students/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"age\": 21\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "DELETE Student by ID",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8000/students/3",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students", "3"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Student - Not Found (404)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8000/students/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students", "999"]
+            }
+          }
+        },
+        {
+          "name": "DELETE All Students - Not Allowed (405)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8000/students",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["students"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "description": "Operatii CRUD pentru cursuri",
+      "item": [
+        {
+          "name": "GET All Courses",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/courses",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses"]
+            }
+          }
+        },
+        {
+          "name": "GET All Courses - Filter by Title",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/courses?title=Matematica",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses"],
+              "query": [{"key": "title", "value": "Matematica"}]
+            }
+          }
+        },
+        {
+          "name": "GET All Courses - Filter by Teacher",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/courses?teacher=Ionescu",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses"],
+              "query": [{"key": "teacher", "value": "Ionescu"}]
+            }
+          }
+        },
+        {
+          "name": "GET All Courses - Pagination",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/courses?page=1&limit=2",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "2"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Course by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/courses/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses", "1"]
+            }
+          }
+        },
+        {
+          "name": "GET Course by ID - Not Found (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/courses/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses", "999"]
+            }
+          }
+        },
+        {
+          "name": "GET Course Students",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/courses/1/students",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses", "1", "students"]
+            }
+          }
+        },
+        {
+          "name": "GET Course Average Grade",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/courses/1/average",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses", "1", "average"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Course",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/courses",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Matematica\",\n    \"description\": \"Algebra liniara si calcul diferential\",\n    \"teacher\": \"Prof. Ionescu\",\n    \"max_students\": 30\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "POST Create Course - Duplicate (409)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/courses",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Matematica\",\n    \"description\": \"Alt curs\",\n    \"teacher\": \"Prof. Ionescu\",\n    \"max_students\": 20\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "POST Create Course - Missing Fields (400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/courses",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Curs fara profesor\"\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "PUT Update Course",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/courses/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Matematica Avansata\",\n    \"description\": \"Algebra liniara avansata\",\n    \"teacher\": \"Prof. Ionescu\",\n    \"max_students\": 35\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "PUT Update Course - Not Found (404)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/courses/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses", "999"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Ghost Course\",\n    \"description\": \"Nu exista\",\n    \"teacher\": \"Prof. Ghost\",\n    \"max_students\": 10\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "PATCH Partial Update Course",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/courses/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"max_students\": 40\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "DELETE Course by ID",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8000/courses/2",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses", "2"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Course - Not Found (404)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8000/courses/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses", "999"]
+            }
+          }
+        },
+        {
+          "name": "DELETE All Courses - Not Allowed (405)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8000/courses",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["courses"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enrollments",
+      "description": "Operatii CRUD pentru inscrieri",
+      "item": [
+        {
+          "name": "GET All Enrollments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/enrollments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments"]
+            }
+          }
+        },
+        {
+          "name": "GET All Enrollments - Filter by Student",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/enrollments?student_id=1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments"],
+              "query": [{"key": "student_id", "value": "1"}]
+            }
+          }
+        },
+        {
+          "name": "GET All Enrollments - Filter by Course",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/enrollments?course_id=1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments"],
+              "query": [{"key": "course_id", "value": "1"}]
+            }
+          }
+        },
+        {
+          "name": "GET All Enrollments - Filter by Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/enrollments?status=enrolled",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments"],
+              "query": [{"key": "status", "value": "enrolled"}]
+            }
+          }
+        },
+        {
+          "name": "GET Enrollment by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/enrollments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments", "1"]
+            }
+          }
+        },
+        {
+          "name": "GET Enrollment by ID - Not Found (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8000/enrollments/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments", "999"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Enrollment",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/enrollments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"student_id\": 1,\n    \"course_id\": 1\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "POST Create Enrollment - Duplicate (409)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/enrollments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"student_id\": 1,\n    \"course_id\": 1\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "POST Create Enrollment - Student Not Found (404)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/enrollments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"student_id\": 999,\n    \"course_id\": 1\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "POST Create Enrollment - Course Not Found (404)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/enrollments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"student_id\": 1,\n    \"course_id\": 999\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "POST Create Enrollment - Missing Fields (400)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/enrollments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"student_id\": 1\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "PUT Update Enrollment - Grade and Status",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/enrollments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"grade\": 9.5,\n    \"status\": \"completed\"\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "PUT Update Enrollment - Invalid Grade (400)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/enrollments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments", "1"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"grade\": 15\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "PUT Update Enrollment - Not Found (404)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "http://localhost:8000/enrollments/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments", "999"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"grade\": 8,\n    \"status\": \"completed\"\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          }
+        },
+        {
+          "name": "DELETE Enrollment by ID",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8000/enrollments/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments", "1"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Enrollment - Not Found (404)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8000/enrollments/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments", "999"]
+            }
+          }
+        },
+        {
+          "name": "DELETE All Enrollments - Not Allowed (405)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "http://localhost:8000/enrollments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["enrollments"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
