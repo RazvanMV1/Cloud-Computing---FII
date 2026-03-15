@@ -1,0 +1,34 @@
+services:
+  backend:
+    build: ./backend
+    container_name: university_backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    networks:
+      - university_network
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build: ./frontend
+    container_name: university_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - university_network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  university_network:
+    driver: bridge

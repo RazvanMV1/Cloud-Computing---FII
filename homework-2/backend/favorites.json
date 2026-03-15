@@ -1,0 +1,12 @@
+{
+  "courses": [
+    {
+      "id": 2,
+      "title": "Machine Learning",
+      "teacher": "Prof. Ionescu Alexandru",
+      "description": "Introducere in machine learning si algoritmi de invatare automata",
+      "max_students": 30
+    }
+  ],
+  "articles": []
+}
