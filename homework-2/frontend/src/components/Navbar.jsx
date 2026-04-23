@@ -8,7 +8,8 @@ export default function Navbar() {
     { path: '/students', label: 'Studenti' },
     { path: '/courses', label: 'Cursuri' },
     { path: '/news', label: 'Stiri' },
-    { path: '/favorites', label: 'Favorite' }
+    { path: '/favorites', label: 'Favorite' },
+    { path: '/activity', label: 'Monitorizare' }
   ]
 
   return (

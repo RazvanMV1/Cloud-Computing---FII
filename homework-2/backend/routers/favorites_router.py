@@ -1,5 +1,7 @@
-from fastapi import APIRouter, HTTPException
+﻿from fastapi import APIRouter, HTTPException
 from services import favorites_service
+from services import queue_service
+from services import activity_service
 from pydantic import BaseModel
 from typing import Optional
 
@@ -40,6 +42,14 @@ async def get_favorite_courses():
 async def add_favorite_course(course: CoursePayload):
     try:
         result = favorites_service.add_favorite_course(course.model_dump())
+        queue_service.send_event("FAVORITE_COURSE_ADDED", {
+            "course_id": course.id,
+            "course_title": course.title
+        })
+        activity_service.log_activity("FAVORITE_COURSE_ADDED", {
+            "course_id": course.id,
+            "course_title": course.title
+        })
         return {"success": True, "message": "Curs adaugat la favorite", "data": result}
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e))
@@ -53,6 +63,12 @@ async def remove_favorite_course(course_id: int):
         removed = favorites_service.remove_favorite_course(course_id)
         if not removed:
             raise HTTPException(status_code=404, detail=f"Cursul cu id {course_id} nu este la favorite")
+        queue_service.send_event("FAVORITE_COURSE_REMOVED", {
+            "course_id": course_id
+        })
+        activity_service.log_activity("FAVORITE_COURSE_REMOVED", {
+            "course_id": course_id
+        })
         return {"success": True, "message": "Curs eliminat din favorite"}
     except HTTPException:
         raise
@@ -73,6 +89,13 @@ async def get_favorite_articles():
 async def add_favorite_article(article: ArticlePayload):
     try:
         result = favorites_service.add_favorite_article(article.model_dump())
+        queue_service.send_event("FAVORITE_ARTICLE_ADDED", {
+            "article_title": article.title,
+            "article_url": article.url
+        })
+        activity_service.log_activity("FAVORITE_ARTICLE_ADDED", {
+            "article_title": article.title
+        })
         return {"success": True, "message": "Articol adaugat la favorite", "data": result}
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e))
@@ -86,6 +109,12 @@ async def remove_favorite_article(payload: RemoveArticlePayload):
         removed = favorites_service.remove_favorite_article(payload.url)
         if not removed:
             raise HTTPException(status_code=404, detail="Articolul nu este la favorite")
+        queue_service.send_event("FAVORITE_ARTICLE_REMOVED", {
+            "article_url": payload.url
+        })
+        activity_service.log_activity("FAVORITE_ARTICLE_REMOVED", {
+            "article_url": payload.url
+        })
         return {"success": True, "message": "Articol eliminat din favorite"}
     except HTTPException:
         raise

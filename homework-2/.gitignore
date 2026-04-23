@@ -1,0 +1,6 @@
+
+.env
+.env.azure
+project_dump.txt
+__pycache__/
+data/favorites.json

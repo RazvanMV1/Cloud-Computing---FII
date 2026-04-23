@@ -1,4 +1,33 @@
+import { useState } from 'react'
+import { translateText } from '../services/api'
+
 export default function NewsCard({ article }) {
+  const [translatedTitle, setTranslatedTitle] = useState(null)
+  const [translatedDesc, setTranslatedDesc] = useState(null)
+  const [translating, setTranslating] = useState(false)
+  const [showOriginal, setShowOriginal] = useState(false)
+
+  const handleTranslate = async () => {
+    if (translatedTitle) {
+      setShowOriginal(!showOriginal)
+      return
+    }
+    setTranslating(true)
+    try {
+      const [titleRes, descRes] = await Promise.all([
+        translateText(article.title, 'ro'),
+        article.description ? translateText(article.description, 'ro') : Promise.resolve(null)
+      ])
+      setTranslatedTitle(titleRes.data.data.translated_text)
+      if (descRes) setTranslatedDesc(descRes.data.data.translated_text)
+      setShowOriginal(false)
+    } catch (err) {
+      console.error('Eroare traducere:', err)
+    } finally {
+      setTranslating(false)
+    }
+  }
+
   const formatDate = (dateString) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('ro-RO', {
@@ -7,6 +36,9 @@ export default function NewsCard({ article }) {
       year: 'numeric'
     })
   }
+
+  const displayTitle = translatedTitle && !showOriginal ? translatedTitle : article.title
+  const displayDesc = translatedDesc && !showOriginal ? translatedDesc : article.description
 
   return (
     <div style={styles.card}>
@@ -23,22 +55,31 @@ export default function NewsCard({ article }) {
           <span style={styles.source}>{article.source}</span>
           <span style={styles.date}>{formatDate(article.published_at)}</span>
         </div>
-        <h3 style={styles.title}>{article.title}</h3>
-        {article.description && (
+        <h3 style={styles.title}>{displayTitle}</h3>
+        {displayDesc && (
           <p style={styles.description}>
-            {article.description.length > 120
-              ? article.description.substring(0, 120) + '...'
-              : article.description}
+            {displayDesc.length > 120
+              ? displayDesc.substring(0, 120) + '...'
+              : displayDesc}
           </p>
         )}
-        <a
-          href={article.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={styles.link}
-        >
-          Citeste articolul
-        </a>
+        <div style={styles.actions}>
+          <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={styles.link}
+          >
+            Citeste articolul
+          </a>
+          <button
+            style={styles.translateBtn}
+            onClick={handleTranslate}
+            disabled={translating}
+          >
+            {translating ? '...' : translatedTitle ? (showOriginal ? 'Traducere' : 'Original') : 'Traduce'}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -92,10 +133,25 @@ const styles = {
     color: '#666',
     lineHeight: '1.5'
   },
+  actions: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 'auto'
+  },
   link: {
     color: '#0066cc',
     fontSize: '0.85rem',
-    fontWeight: 'bold',
-    marginTop: 'auto'
+    fontWeight: 'bold'
+  },
+  translateBtn: {
+    padding: '0.3rem 0.7rem',
+    backgroundColor: '#e8f4fd',
+    color: '#0078d4',
+    border: '1px solid #0078d4',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '0.75rem',
+    fontWeight: 'bold'
   }
 }

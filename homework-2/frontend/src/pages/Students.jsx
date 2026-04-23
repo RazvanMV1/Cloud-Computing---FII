@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getStudents, getStudentById, getStudentCourses } from '../services/api'
+import { getStudents, getStudentById, getStudentCourses, uploadDocument, getStudentDocuments, deleteDocument } from '../services/api'
 import StudentCard from '../components/StudentCard'
 import ErrorMessage from '../components/ErrorMessage'
 
@@ -13,8 +13,11 @@ export default function Students() {
 
   const [selectedStudent, setSelectedStudent] = useState(null)
   const [studentCourses, setStudentCourses] = useState([])
+  const [studentDocs, setStudentDocs] = useState([])
   const [loadingDetail, setLoadingDetail] = useState(false)
   const [errorDetail, setErrorDetail] = useState(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadMsg, setUploadMsg] = useState(null)
 
   const fetchStudents = async (searchName = '', currentPage = 1) => {
     setLoading(true)
@@ -36,18 +39,50 @@ export default function Students() {
     setLoadingDetail(true)
     setErrorDetail(null)
     setStudentCourses([])
+    setStudentDocs([])
+    setUploadMsg(null)
     try {
-      const [studentRes, coursesRes] = await Promise.all([
+      const [studentRes, coursesRes, docsRes] = await Promise.all([
         getStudentById(studentId),
-        getStudentCourses(studentId)
+        getStudentCourses(studentId),
+        getStudentDocuments(studentId)
       ])
       setSelectedStudent(studentRes.data.data || studentRes.data)
       const coursesData = coursesRes.data.data?.courses || coursesRes.data.courses || []
       setStudentCourses(Array.isArray(coursesData) ? coursesData : [])
+      setStudentDocs(docsRes.data.data || [])
     } catch (err) {
       setErrorDetail(err.message)
     } finally {
       setLoadingDetail(false)
+    }
+  }
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file || !selectedStudent) return
+    setUploading(true)
+    setUploadMsg(null)
+    try {
+      await uploadDocument(selectedStudent.id, file)
+      setUploadMsg('Document uploadat cu succes!')
+      const docsRes = await getStudentDocuments(selectedStudent.id)
+      setStudentDocs(docsRes.data.data || [])
+    } catch (err) {
+      setUploadMsg('Eroare la upload: ' + (err.message || 'necunoscuta'))
+    } finally {
+      setUploading(false)
+      e.target.value = ''
+    }
+  }
+
+  const handleDeleteDoc = async (filename) => {
+    if (!selectedStudent) return
+    try {
+      await deleteDocument(selectedStudent.id, filename)
+      setStudentDocs(prev => prev.filter(d => d.filename !== filename))
+    } catch (err) {
+      alert('Eroare la stergerea documentului')
     }
   }
 
@@ -73,7 +108,15 @@ export default function Students() {
   const closeModal = () => {
     setSelectedStudent(null)
     setStudentCourses([])
+    setStudentDocs([])
     setErrorDetail(null)
+    setUploadMsg(null)
+  }
+
+  const formatSize = (bytes) => {
+    if (bytes < 1024) return bytes + ' B'
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
   }
 
   return (
@@ -118,7 +161,7 @@ export default function Students() {
       ) : (
         <>
           <p style={styles.resultsInfo}>
-            {pagination && `${pagination.total} studenti gasiti — pagina ${pagination.page} din ${pagination.pages}`}
+            {pagination && `${pagination.total} studenti gasiti - pagina ${pagination.page} din ${pagination.pages}`}
           </p>
           <div style={styles.grid}>
             {students.map(student => (
@@ -222,6 +265,62 @@ export default function Students() {
                     ))}
                   </div>
                 )}
+
+                <div style={styles.docsSection}>
+                  <h3 style={styles.coursesTitle}>
+                    Documente ({studentDocs.length})
+                  </h3>
+                  <p style={styles.docsSubtitle}>Stocat in Azure Blob Storage</p>
+
+                  <div style={styles.uploadArea}>
+                    <label style={styles.uploadLabel}>
+                      {uploading ? 'Se uploadeaza...' : 'Incarca document'}
+                      <input
+                        type="file"
+                        onChange={handleFileUpload}
+                        disabled={uploading}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                    {uploadMsg && (
+                      <span style={{
+                        ...styles.uploadMsg,
+                        color: uploadMsg.includes('succes') ? '#28a745' : '#dc3545'
+                      }}>
+                        {uploadMsg}
+                      </span>
+                    )}
+                  </div>
+
+                  {studentDocs.length === 0 ? (
+                    <p style={styles.noCourses}>Niciun document uploadat</p>
+                  ) : (
+                    <div style={styles.docsList}>
+                      {studentDocs.map((doc, index) => (
+                        <div key={index} style={styles.docItem}>
+                          <div style={{ flex: 1 }}>
+                            <p style={styles.docName}>{doc.filename}</p>
+                            <p style={styles.docMeta}>{formatSize(doc.size)}</p>
+                          </div>
+                          <a
+                            href={doc.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={styles.docLink}
+                          >
+                            Descarca
+                          </a>
+                          <button
+                            style={styles.docDelete}
+                            onClick={() => handleDeleteDoc(doc.filename)}
+                          >
+                            X
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </>
             )}
           </div>
@@ -337,7 +436,7 @@ const styles = {
     padding: '2rem',
     width: '100%',
     maxWidth: '560px',
-    maxHeight: '80vh',
+    maxHeight: '85vh',
     overflowY: 'auto',
     position: 'relative'
   },
@@ -441,5 +540,69 @@ const styles = {
     borderRadius: '20px',
     fontWeight: 'bold',
     whiteSpace: 'nowrap'
+  },
+  docsSection: {
+    marginTop: '1.5rem',
+    paddingTop: '1rem',
+    borderTop: '1px solid #eee'
+  },
+  docsSubtitle: {
+    fontSize: '0.75rem',
+    color: '#0078d4',
+    marginBottom: '0.8rem',
+    marginTop: '-0.5rem'
+  },
+  uploadArea: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.8rem',
+    marginBottom: '0.8rem'
+  },
+  uploadLabel: {
+    padding: '0.5rem 1rem',
+    backgroundColor: '#0078d4',
+    color: '#fff',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '0.85rem',
+    fontWeight: 'bold'
+  },
+  uploadMsg: {
+    fontSize: '0.82rem'
+  },
+  docsList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.4rem'
+  },
+  docItem: {
+    backgroundColor: '#f0f6ff',
+    borderRadius: '8px',
+    padding: '0.6rem 1rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem'
+  },
+  docName: {
+    fontSize: '0.85rem',
+    fontWeight: 'bold',
+    color: '#1a1a2e'
+  },
+  docMeta: {
+    fontSize: '0.75rem',
+    color: '#888'
+  },
+  docLink: {
+    fontSize: '0.8rem',
+    color: '#0078d4',
+    fontWeight: 'bold'
+  },
+  docDelete: {
+    background: 'none',
+    border: 'none',
+    color: '#dc3545',
+    cursor: 'pointer',
+    fontSize: '0.9rem',
+    fontWeight: 'bold'
   }
 }

@@ -5,6 +5,7 @@ import Students from './pages/Students'
 import Courses from './pages/Courses'
 import News from './pages/News'
 import Favorites from './pages/Favorites'
+import ActivityLog from './pages/ActivityLog'
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
             <Route path="/courses" element={<Courses />} />
             <Route path="/news" element={<News />} />
             <Route path="/favorites" element={<Favorites />} />
+            <Route path="/activity" element={<ActivityLog />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
